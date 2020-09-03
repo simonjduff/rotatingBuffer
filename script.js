@@ -2,6 +2,7 @@ const _sliceCount = 13;
 const sliceAngle = (2 * Math.PI) / _sliceCount;
 const _textOffset = {x: 30, y: -5};
 var _rotateCount = 0;
+const _retention = 5; // retention partitions
 
 async function drawDial(ctx) {
         ctx.beginPath();
@@ -10,12 +11,6 @@ async function drawDial(ctx) {
         ctx.moveTo(0,0);
 
         for (var i=0;i<_sliceCount;i++){
-            var text = i.toString();
-            if (i == 3){
-                text = i + ' 2020-08-10';
-            }
-
-            ctx.fillText(text, _textOffset.x, _textOffset.y);
             ctx.rotate(sliceAngle);
             ctx.moveTo(0,0);
             ctx.lineTo(100,0);
@@ -24,33 +19,52 @@ async function drawDial(ctx) {
         ctx.translate(-150,-150);
 
         ctx.stroke();
+        ctx.resetTransform();
+        addItem();
 }
 
 function init(){
-    var canvas = document.getElementById('canvas');
-    if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
-        drawLabels(ctx);
-        drawDial(ctx);
-    }
+    var ctx = getContext();
+    drawLabels(ctx);
+    drawDial(ctx);
 }
 
 function rotate(){
-    var canvas = document.getElementById('canvas');    
-    if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
-        _rotateCount++;
-        drawLabels(ctx);
-        ctx.clearRect(0,0,300,300);
-        ctx.translate(150, 150);
-        console.log('rotate');
-        ctx.rotate(sliceAngle * -1 * _rotateCount);
-        ctx.translate(-150,-150);
-        drawDial(ctx);
-        ctx.resetTransform();
-    }
+    var ctx = getContext();
+    _rotateCount++;
+    ctx.clearRect(0,0,400,300);
+    drawLabels(ctx);
+    ctx.translate(150, 150);
+    console.log('rotate');
+    ctx.rotate(sliceAngle * -1 * _rotateCount);
+    ctx.translate(-150,-150);
+    drawDial(ctx);
+    ctx.resetTransform();
 }
 
 function drawLabels(ctx){
-    ctx.fillText('NOW', 120, 0);
+    ctx.fillText(`Retention ${_retention} days`, 0, 40);
+    ctx.fillText(`Day ${_rotateCount}`, 0, 50);
+    ctx.translate(150, 150);
+    ctx.fillText(`2020-09-0${_rotateCount + 1}`, 110, -5);
+    ctx.translate(-150,-150);
+}
+
+function addItem(ctx){
+    var ctx = getContext();
+    ctx.translate(150, 150);
+    console.log(`${_retention} - ${_rotateCount} = ${_retention - _rotateCount}`);
+    var angle = sliceAngle * (_retention - _rotateCount);
+    ctx.rotate(angle);
+    ctx.fillText(`2020-09-0${_retention + 1}`, _textOffset.x, _textOffset.y);
+    ctx.resetTransform();
+}
+
+function getContext(){
+    var canvas = document.getElementById('canvas');    
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        return ctx;
+    }
+    throw 'Failed to get 2d context';
 }
