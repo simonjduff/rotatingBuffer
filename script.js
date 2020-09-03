@@ -14,6 +14,7 @@ async function drawDial(ctx) {
             ctx.rotate(sliceAngle);
             ctx.moveTo(0,0);
             ctx.lineTo(100,0);
+            ctx.fillText(i, 105, -5);
         }
 
         ctx.translate(-150,-150);
@@ -46,7 +47,7 @@ function drawLabels(ctx){
     ctx.fillText(`Retention ${_retention} days`, 0, 40);
     ctx.fillText(`Day ${_rotateCount}`, 0, 50);
     ctx.translate(150, 150);
-    ctx.fillText(`2020-09-0${_rotateCount + 1}`, 110, -5);
+    ctx.fillText(`2020-09-0${_rotateCount + 1}`, 120, -5);
     ctx.translate(-150,-150);
 }
 
